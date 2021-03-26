@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: HACKATHON
+  profiles:
+    active: dev
