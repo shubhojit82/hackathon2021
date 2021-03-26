@@ -1,5 +1,7 @@
 package com.albertsons.hackathon.sendingemail.model;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +13,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class MailModel {
 
-    private String from;
+    public MailModel() {
+	}
+
+	private String from;
     
     private String to;
     
@@ -23,7 +28,7 @@ public class MailModel {
     
     private String savings;
     
-    private String transaction;
+    private Long transaction;
     
     private String itemName;
     
@@ -32,6 +37,14 @@ public class MailModel {
     private String ourPrice;
     
     private String upcId;
+    
+    private  String banner;
+    
+    private int orderId;
+    
+    private LocalDate orderDate;
+    
+    private  List<UPC>  upcs;
     
     private Map<String, String> model;
 }

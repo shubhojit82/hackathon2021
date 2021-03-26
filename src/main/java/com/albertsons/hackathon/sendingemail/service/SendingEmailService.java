@@ -10,5 +10,5 @@ import java.io.IOException;
 
 public interface SendingEmailService {
 
-    void sendEmail(MailModel mailModel, String banner) throws MessagingException, IOException, TemplateException;
+    void sendEmail(MailModel mailModel) throws MessagingException, IOException, TemplateException;
 }
