@@ -3,20 +3,17 @@ package com.albertsons.hackathon.sendingemail.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.albertsons.hackathon.sendingemail.entity.PartnerTransactionEntity;
 import com.albertsons.hackathon.sendingemail.model.MailModel;
-import com.albertsons.hackathon.sendingemail.model.PartnerTransactionModel;
 import com.albertsons.hackathon.sendingemail.model.UPC;
 import com.albertsons.hackathon.sendingemail.repository.PartnerTransactionRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
@@ -32,60 +29,89 @@ public class PartnerTransactionService {
     private SendingEmailService sendingEmailService;
 	
 	MailModel mailModel = new MailModel();
-
-	public void getPartnerTransaction(Long transactionId) throws MessagingException, IOException, TemplateException {
-
-		partnerTransactionMapper(transactionId);
-		
+	
+	
+	public void getPartnerTransaction(String banner) {
+		log.info("banner Name = "+ banner);
+		partnerTransactionMapper(banner);
 	}
 
-	private void partnerTransactionMapper(Long transactionId) throws MessagingException, IOException, TemplateException  {
-
+	private void partnerTransactionMapper(String banner) {
+		List<Long> transId = getTransactionIds(banner);
+		transId.stream().forEach(transaction -> {
+			log.info("Transaction  number = " + transaction);
+			transactionDetails(transaction,banner);
+		});
+	}
+	
+	/**
+	 * This method returns all the distinct transaction id.
+	 * @param banner
+	 * @return
+	 */
+	private List<Long> getTransactionIds(String banner) {
+		
+		List<PartnerTransactionEntity> partnerTransactionEntities = partnerTransactionRepository.findByBanner(banner);
+		List<Long> tansactionIds = new ArrayList<Long>();
+		partnerTransactionEntities.forEach(transId -> {
+			tansactionIds.add(transId.getTransactionId());
+		});
+		
+		return tansactionIds.stream().distinct().collect(Collectors.toList());
+	}
+	
+	/*
+	 * This method update the model with list of UPC
+	 */
+	private void transactionDetails(Long transId, String banner)  {
+		
 		List<PartnerTransactionEntity> partnerTransactionEntities = partnerTransactionRepository
-				.findByTransactionNumber(transactionId);
-		List<PartnerTransactionModel> partnerTransactionDTos = new ArrayList<PartnerTransactionModel>();
-		partnerTransactionEntities.forEach(entity -> {
-			partnerTransactionDTos
-					.add(new PartnerTransactionModel(entity.getBannerName(), entity.getEmailId(), entity.getFirstname(),
-							entity.getLastname(), entity.getHousehold_id(), entity.getInstacartOrderNumber(),
-							entity.getTransactionDate(), entity.getTransactionId(), getUPC(entity)));
+				.findByTransactionIdAndBanner(transId.longValue(), banner);
+		
+		List<UPC> upclist = getUPCList(partnerTransactionEntities);
+		Double totalSavings =  0.00;
+		for(int i=0;i<upclist.size();i++) {
+		    totalSavings += upclist.get(i).getSavings();
+			mailModel.setSavings(totalSavings);   
+		}
+		
+		
+		partnerTransactionEntities.stream().forEach(entity -> {
+			mailModel.setTo(entity.getEmailId());
+			mailModel.setBanner(entity.getBannerName());
+			mailModel.setOrderDate(entity.getTransactionDate());
+			mailModel.setOrderId(entity.getInstacartOrderNumber());
+			mailModel.setName(entity.getFirstname());
 		});
 		
-		partnerTransactionDTos.forEach(partnerTransactionDetail -> {
-            mailModel.setTo(partnerTransactionDetail.getEmail_id());
-            mailModel.setBanner(partnerTransactionDetail.getBanner());
-            mailModel.setName(partnerTransactionDetail.getFirstname().concat(" ").concat(partnerTransactionDetail.getLastname()));
-            mailModel.setTransaction(partnerTransactionDetail.getTxn_id());
-            mailModel.setOrderId(partnerTransactionDetail.getInstacart_order_no());
-            mailModel.setOrderDate(partnerTransactionDetail.getTxn_dt());
-            mailModel.setUpcs(getUPCList(partnerTransactionDetail));
-        });
+		log.info("************mailModel**********  ="  + mailModel.toString());
 		
-		sendingEmailService.sendEmail(mailModel);
+		try {
+			sendingEmailService.sendEmail(mailModel);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TemplateException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private List<UPC> getUPC(PartnerTransactionEntity entity) {
+	private List<UPC> getUPCList(List<PartnerTransactionEntity> partnerTransactionEntities) {
+
 		List<UPC> upcs = new ArrayList<UPC>();
-		upcs.add(UPC.builder().upc_id(entity.getUpcId()).purchased_qty(entity.getPurchasedQuantity())
-				.net_amount_paid(entity.getNetAmountPaid()).loyal_cust_wud_hv_paid(entity.getLoyaltyCustomerPrice())
-				.item_description(entity.getItemDescription()).build());
-		return upcs;
-	}
-	
-	private List<UPC> getUPCList(PartnerTransactionModel partnerTransactionDetail)  {
-		List<UPC> upcs = new ArrayList<UPC>();
-		
-		partnerTransactionDetail.getUpc().forEach(upc ->  {
+		partnerTransactionEntities.stream().forEach(entities -> {
 			upcs.add(UPC.builder()
-					.item_description(upc.getItem_description())
-					.loyal_cust_wud_hv_paid(upc.getLoyal_cust_wud_hv_paid())
-					.upc_id(upc.getUpc_id())
-					.net_amount_paid(upc.getNet_amount_paid())
-					.purchased_qty(upc.getPurchased_qty())
-					.build());
+					.upc_id(entities.getUpcId())
+					.loyal_cust_wud_hv_paid(entities.getLoyaltyCustomerPrice())
+					.net_amount_paid(entities.getNetAmountPaid())
+					.purchased_qty(entities.getPurchasedQuantity())
+					.savings(entities.getNetAmountPaid() - entities.getLoyaltyCustomerPrice())
+					.item_description(entities.getItemDescription()).build());
 		});
 		
-		
+		log.info("upcs >>>>>>>> " + upcs );
+		mailModel.setUpcs(upcs);
 		return upcs;
 	}
 

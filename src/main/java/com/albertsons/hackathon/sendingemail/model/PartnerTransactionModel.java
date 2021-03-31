@@ -27,11 +27,13 @@ public class PartnerTransactionModel {
 	
 	private Long household_id;
 	
-	private int instacart_order_no;
+	private Long instacart_order_no;
 	
 	private LocalDate txn_dt;
 	
 	private Long txn_id;
+	
+	private int mail_flag;
 	
 	private List<UPC> upc;
 

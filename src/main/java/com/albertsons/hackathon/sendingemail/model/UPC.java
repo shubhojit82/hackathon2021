@@ -1,8 +1,5 @@
 package com.albertsons.hackathon.sendingemail.model;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +21,8 @@ public class UPC {
 	private Double net_amount_paid;
 	
 	private Double loyal_cust_wud_hv_paid;
+	
+	private Double savings;
 	
 	private String item_description;
 	

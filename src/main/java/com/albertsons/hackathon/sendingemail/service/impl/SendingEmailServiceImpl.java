@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -45,30 +44,44 @@ public class SendingEmailServiceImpl implements SendingEmailService {
     @Override
     public void sendEmail(MailModel mailModel) throws MessagingException, IOException, TemplateException {
 
-        Map<String, String> model = new HashMap<String, String>();
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("name", mailModel.getName());
         model.put("location", "USA- Charlotte NC");
         model.put("signature", "https://safeway.com");
-        model.put("savings", "2.95");
-        //model.put("savings", mailModel.getSavings());
-        model.put("transaction", mailModel.getTransaction().toString());
-        model.put("itemName", mailModel.getItemName());
-        
-        model.put("partnerPrice", mailModel.getPartnerPrice());
-        model.put("ourPrice", mailModel.getOurPrice());
-        model.put("upcId", mailModel.getUpcId());
-        
-        model.put("content", mailModel.getContent());
         model.put("to", mailModel.getTo());
         model.put("orderId", String.valueOf(mailModel.getOrderId()));
         model.put("orderDate", String.valueOf(mailModel.getOrderDate()));
         model.put("subject", "We found you a way to Save $$$");
-
-        /**
-         * Add below line if you need to create a token to verification emails and uncomment line:32 in "email.ftl"
-         * model.put("token",UUID.randomUUID().toString());
-         */
-
+        
+        model.put("totalSavings", mailModel.getSavings());
+        StringBuilder buf = new StringBuilder();
+        buf.append(
+                   "<table border=\"1\">" +
+                   "<tr>" +
+                   "<th>ITEM#</th>" +
+                   "<th>ITEM DESCRIPTION</th>" +
+                   "<th>PARTNER PRICE</th>" +
+                   "<th>LOYALTY PRICE</th>" +
+                   "<th>SAVINGS</th>" +
+                   "</tr>");
+        for (int i = 0; i < mailModel.getUpcs().size(); i++) {
+            buf.append("<tr><td>")
+               .append(mailModel.getUpcs().get(i).getUpc_id())
+               .append("</td><td>")
+               .append(mailModel.getUpcs().get(i).getItem_description())
+               .append("</td><td><span  style=\" color: red;\"> $<b>")
+               .append(mailModel.getUpcs().get(i).getNet_amount_paid())
+               .append("</b> </span></td><td><span  style=\" color: blue;\"> $<b>")
+               .append(mailModel.getUpcs().get(i).getLoyal_cust_wud_hv_paid())
+               .append("</b> </span></td><td><span  style=\" color: green;\"> $<b>")
+               .append(mailModel.getUpcs().get(i).getNet_amount_paid() - mailModel.getUpcs().get(i).getLoyal_cust_wud_hv_paid())
+               .append("</b> </span></td></tr>");
+        }
+        buf.append("</table>");
+        
+        model.put("UPCTable", buf);
+        
+        
         mailModel.setModel(model);
 
 
@@ -77,7 +90,6 @@ public class SendingEmailServiceImpl implements SendingEmailService {
 
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
-        mimeMessageHelper.addInline("logo.png", new ClassPathResource("classpath:/techmagisterLogo.png"));
 
         Template template = emailConfig.getTemplate( mailModel.getBanner().concat(".ftl"));
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, mailModel.getModel());
@@ -86,11 +98,12 @@ public class SendingEmailServiceImpl implements SendingEmailService {
         mimeMessageHelper.setTo(mailModel.getTo());
         mimeMessageHelper.setText(html, true);
         mimeMessageHelper.setSubject("We found you a way to Save $$$");
-        mimeMessageHelper.setFrom("no-reply@status.vons.com");
-
-
-        emailSender.send(message);
+        if("VONS".equalsIgnoreCase(mailModel.getBanner())) {
+        	mimeMessageHelper.setFrom("no-reply@status.vons.com");
+        } else  {
+        	mimeMessageHelper.setFrom("no-reply@status.safeway.com");
+        }
         
-
+        emailSender.send(message);
     }
 }

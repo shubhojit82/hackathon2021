@@ -1,4 +1,4 @@
-CREATE TABLE emju.instacart_txn (
+CREATE TABLE hackathon.instacart_txn (
 banner text,
 txn_id bigint,
 upc_id bigint,

@@ -1,16 +1,13 @@
 package com.albertsons.hackathon.sendingemail.entity;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.Date;
 
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -56,7 +53,7 @@ public class PartnerTransactionEntity implements Serializable {
 	private Long household_id;
 
 	@Column(value = "instacart_order_no")
-	private int instacartOrderNumber;
+	private Long instacartOrderNumber;
 
 	@Column(value = "item_description")
 	private String itemDescription;
@@ -72,5 +69,8 @@ public class PartnerTransactionEntity implements Serializable {
 
 	@Column(value = "txn_dt")
 	private LocalDate transactionDate;
+	
+	@Column(value = "mail_flag")
+	private int mailFlag;
 
 }

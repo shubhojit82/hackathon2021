@@ -24,9 +24,7 @@ public class MailModel {
     
     private String subject;
     
-    private String content;
-    
-    private String savings;
+    private Double savings;
     
     private Long transaction;
     
@@ -36,15 +34,15 @@ public class MailModel {
     
     private String ourPrice;
     
-    private String upcId;
-    
     private  String banner;
     
-    private int orderId;
+    private Long orderId;
     
     private LocalDate orderDate;
     
+    private Double total_savings;
+    
     private  List<UPC>  upcs;
     
-    private Map<String, String> model;
+    private Map<String, Object> model;
 }
