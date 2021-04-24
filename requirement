@@ -1,3 +1,4 @@
 Show total savings in percentage. Savings in dollar amount to be rounded to 2 decimal places
+Show additional savings if they had clipped and redeemed eligible coupons
 Add a button in email. When customer clicks the button, customer gets directed to ABS shop site with the list of available items automatically added to their cart. Maybe we can call this button - Add to [banner] cart
-Show the items purchased from Instacart in order history
+Show the items purchased from Instacart in ABS order history
