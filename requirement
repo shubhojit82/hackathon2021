@@ -1,0 +1,5 @@
+Show total savings in percentage. Savings in dollar amount to be rounded to 2 decimal places
+Show additional savings if they had clipped and redeemed eligible coupons
+Add a button in email. When customer clicks the button, customer gets directed to ABS shop site with the list of available items automatically added to their cart. Maybe we can call this button - Add to [banner] cart
+Show the items purchased from Instacart in ABS order history on shop site
+Leverage Instant Allocation capabilities to allocate offers to customer who have been regularly shopping through Instacart on ABS banners --> e.g., if a customer has placed 5 orders from our stores within the past 2 months, send them a WOD offer for our home delivery, DUG, etc.
