@@ -3,7 +3,7 @@
 ### Build
 Execute the following command from the parent directory to build the jar file:</br>
 ```
-mvn clean install -Drevision=1.0.0-SNAPSHOT
+mvn clean install
 ```
 
 ### Run
