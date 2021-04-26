@@ -12,12 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import com.albertsons.hackathon.sendingemail.model.MailModel;
+import com.albertsons.hackathon.sendingemail.model.PartnerTransactionModel;
 import com.albertsons.hackathon.sendingemail.repository.PartnerTransactionRepository;
 import com.albertsons.hackathon.sendingemail.service.SendingEmailService;
 
@@ -35,11 +37,14 @@ public class SendingEmailServiceImpl implements SendingEmailService {
     private JavaMailSender emailSender;
     
     @Autowired
-    PartnerTransactionRepository promoEmailRepository;
+    PartnerTransactionRepository partnerTransactionRepository;
 
     @Autowired
     @Qualifier("emailConfigBean")
     private Configuration emailConfig;
+    
+    @Autowired
+    private CassandraOperations cassandraOperations;
 
     @Override
     public void sendEmail(MailModel mailModel) throws MessagingException, IOException, TemplateException {
@@ -105,5 +110,14 @@ public class SendingEmailServiceImpl implements SendingEmailService {
         }
         
         emailSender.send(message);
+        
+        log.info("Email sent successfully to : " + mailModel.getTo());
+       
+    }
+    
+    @Override
+    public PartnerTransactionModel saveOrUpdate(PartnerTransactionModel product) {
+    	partnerTransactionRepository.save(product);
+        return product;
     }
 }

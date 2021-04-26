@@ -17,7 +17,7 @@
                          .ExternalClass span,       
                          .ExternalClass font,       
                          .ExternalClass td,       
-                         .ExternalClass div { 
+                         .` div { 
                                  line-height: 100%;       }  
                                        table {         
                                        mso-table-lspace: 0pt; 
@@ -345,27 +345,15 @@
            font-size: 16px;">                                     
            <p role="text">                                    
             <p><span>Explore our&nbsp;<b>just for U</b><sup><b>®</b>&nbsp;</sup>
-            program to add deals, earn Rewards points to redeem towards gas or groceries and save on the things you already buy. You  could have saved
-            <span  style=" color: red;"> $<b>${savings} </b> </span>                                       
+            program to add deals, earn Rewards points to redeem towards gas or groceries and save on the things you already buy. 
+            You  could have saved
+            <span  style=" color: red;"> $<b>${totalSavings} </b> </span>                                       
             </p>   <br/>
-            Your Savings Breakdown for your Instacart trasaction number  : 
-            <span  style=" color: red;"> <b>${transaction} </b>  </span><br/> <br />
-            <table border="1"  height="100%" width="100%" ><tbody>
-            <tr>
-            <td>Item  Name</td>
-            <td>Item  ID</td>
-            <td>Partner Price</td>
-            <td>Our Price</td>
-            <td>Savings</td>
-            </tr>
-            <tr>
-            <td> ${itemName} </td>
-            <td> ${upcId} </td>
-           <td> <span  style=" color: red;"> $<b> ${partnerPrice} </b> </spam></td>
-             <td><span  style=" color: blue;"> $<b> ${ourPrice} </b> </spam></td>
-             <td><span  style=" color: green;"> $<b> ${savings} </b> </spam></td>
-            </tr>
-            </tbody></table>                              
+            
+            
+            Your Savings Breakdown for your Instacart order number : 
+             <span  style=" color: red;"> # <b>${orderId}</b> </span>  placed on <span  style=" color: red;"> <b>${orderDate}</b>. </span>  <br/>
+            ${UPCTable}                              
             </td>                             
             </tr>                                                                               
             <tr>                                 

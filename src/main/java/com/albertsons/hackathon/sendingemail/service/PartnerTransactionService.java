@@ -68,33 +68,44 @@ public class PartnerTransactionService {
 		List<PartnerTransactionEntity> partnerTransactionEntities = partnerTransactionRepository
 				.findByTransactionIdAndBanner(transId.longValue(), banner);
 		
-		List<UPC> upclist = getUPCList(partnerTransactionEntities);
-		Double totalSavings =  0.00;
-		for(int i=0;i<upclist.size();i++) {
-		    totalSavings += upclist.get(i).getSavings();
-			mailModel.setSavings(totalSavings);   
+		boolean  emaill_already_sent = false;
+		for (int j=0; j<partnerTransactionEntities.size(); j++) {
+			int mailFlag = partnerTransactionEntities.listIterator().next().getMailFlag();
+			if(mailFlag == 1)
+				emaill_already_sent = true;
 		}
 		
-		
-		partnerTransactionEntities.stream().forEach(entity -> {
-			mailModel.setTo(entity.getEmailId());
-			mailModel.setBanner(entity.getBannerName());
-			mailModel.setOrderDate(entity.getTransactionDate());
-			mailModel.setOrderId(entity.getInstacartOrderNumber());
-			mailModel.setName(entity.getFirstname());
-		});
-		
-		log.info("************mailModel**********  ="  + mailModel.toString());
-		
-		try {
-			sendingEmailService.sendEmail(mailModel);
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (TemplateException e) {
-			e.printStackTrace();
+		if(!emaill_already_sent) {
+			List<UPC> upclist = getUPCList(partnerTransactionEntities);
+			Double totalSavings =  0.00;
+			for(int i=0;i<upclist.size();i++) {
+			    totalSavings += upclist.get(i).getSavings();
+				mailModel.setSavings(totalSavings);   
+			}
+			
+			
+			partnerTransactionEntities.stream().forEach(entity -> {
+				mailModel.setTo(entity.getEmailId());
+				mailModel.setBanner(entity.getBannerName());
+				mailModel.setOrderDate(entity.getTransactionDate());
+				mailModel.setOrderId(entity.getInstacartOrderNumber());
+				mailModel.setName(entity.getFirstname());
+				mailModel.setTransaction(entity.getTransactionId());
+			});
+			
+			log.info("************mailModel**********  ="  + mailModel.toString());
+			
+			try {
+				sendingEmailService.sendEmail(mailModel);
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (TemplateException e) {
+				e.printStackTrace();
+			}
 		}
+		
 	}
 	
 	private List<UPC> getUPCList(List<PartnerTransactionEntity> partnerTransactionEntities) {
