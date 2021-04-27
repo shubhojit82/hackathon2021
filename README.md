@@ -1,4 +1,4 @@
-# hackathon2021
+# hackathon 2021
 
 ### Build
 Execute the following command from the parent directory to build the jar file:</br>
