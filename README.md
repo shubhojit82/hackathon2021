@@ -14,3 +14,6 @@ mvn spring-boot:run
 
 Once the application starts up, navigate to ```http://localhost:<9080>/actuator/health``` 
 and ```http://localhost:<9080>/actuator/info```</br>
+
+### Architecture Diagram
+![Hackathon - Architecture Proposal](https://user-images.githubusercontent.com/31447207/116496179-4ea62880-a859-11eb-9246-466239a69709.png)
