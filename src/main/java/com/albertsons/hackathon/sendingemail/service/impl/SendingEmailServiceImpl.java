@@ -63,7 +63,6 @@ public class SendingEmailServiceImpl implements SendingEmailService {
         buf.append(
                    "<table border=\"1\">" +
                    "<tr>" +
-                   "<th>ITEM#</th>" +
                    "<th>ITEM DESCRIPTION</th>" +
                    "<th>PARTNER PRICE</th>" +
                    "<th>LOYALTY PRICE</th>" +
@@ -71,8 +70,6 @@ public class SendingEmailServiceImpl implements SendingEmailService {
                    "</tr>");
         for (int i = 0; i < mailModel.getUpcs().size(); i++) {
             buf.append("<tr><td>")
-               .append(mailModel.getUpcs().get(i).getUpc_id())
-               .append("</td><td>")
                .append(mailModel.getUpcs().get(i).getItem_description())
                .append("</td><td><span  style=\" color: red;\"> $<b>")
                .append(mailModel.getUpcs().get(i).getNet_amount_paid())
