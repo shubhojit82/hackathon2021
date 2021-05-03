@@ -51,7 +51,7 @@ public class PartnerTransactionService {
 	 */
 	private List<Long> getTransactionIds(String banner) {
 		
-		List<PartnerTransactionEntity> partnerTransactionEntities = partnerTransactionRepository.findByBanner(banner);
+		List<PartnerTransactionEntity> partnerTransactionEntities = partnerTransactionRepository.findByBanner(banner.toUpperCase());
 		List<Long> tansactionIds = new ArrayList<Long>();
 		partnerTransactionEntities.forEach(transId -> {
 			tansactionIds.add(transId.getTransactionId());
@@ -66,7 +66,7 @@ public class PartnerTransactionService {
 	private void transactionDetails(Long transId, String banner)  {
 		
 		List<PartnerTransactionEntity> partnerTransactionEntities = partnerTransactionRepository
-				.findByTransactionIdAndBanner(transId.longValue(), banner);
+				.findByTransactionIdAndBanner(transId.longValue(), banner.toUpperCase());
 		
 		boolean  emaill_already_sent = false;
 		for (int j=0; j<partnerTransactionEntities.size(); j++) {
@@ -78,9 +78,12 @@ public class PartnerTransactionService {
 		if(!emaill_already_sent) {
 			List<UPC> upclist = getUPCList(partnerTransactionEntities);
 			Double totalSavings =  0.00;
+			Double totalPartnerPrice = 0.00;
 			for(int i=0;i<upclist.size();i++) {
 			    totalSavings += upclist.get(i).getSavings();
+			    totalPartnerPrice += upclist.get(i).getNet_amount_paid();
 				mailModel.setSavings(totalSavings);   
+				mailModel.setTotal_partner_price(totalPartnerPrice);
 			}
 			
 			
@@ -97,6 +100,7 @@ public class PartnerTransactionService {
 			
 			try {
 				sendingEmailService.sendEmail(mailModel);
+				//Update table to set email sent flag to 1
 			} catch (MessagingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

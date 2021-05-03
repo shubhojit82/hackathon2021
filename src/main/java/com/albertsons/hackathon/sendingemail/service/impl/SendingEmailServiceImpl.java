@@ -2,6 +2,7 @@ package com.albertsons.hackathon.sendingemail.service.impl;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,10 +47,15 @@ public class SendingEmailServiceImpl implements SendingEmailService {
     @Autowired
     private CassandraOperations cassandraOperations;
 
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
+
+    
     @Override
     public void sendEmail(MailModel mailModel) throws MessagingException, IOException, TemplateException {
 
         Map<String, Object> model = new HashMap<String, Object>();
+        Double totalSavings = 0.00;
+        totalSavings = mailModel.getSavings();
         model.put("name", mailModel.getName());
         model.put("location", "USA- Charlotte NC");
         model.put("signature", "https://safeway.com");
@@ -58,14 +64,15 @@ public class SendingEmailServiceImpl implements SendingEmailService {
         model.put("orderDate", String.valueOf(mailModel.getOrderDate()));
         model.put("subject", "We found you a way to Save $$$");
         
-        model.put("totalSavings", mailModel.getSavings());
+        model.put("totalSavings", df2.format(totalSavings));
+        model.put("percentage", mailModel.getSavings()/mailModel.getTotal_partner_price()*100);
         StringBuilder buf = new StringBuilder();
         buf.append(
                    "<table border=\"1\">" +
                    "<tr>" +
-                   "<th>ITEM DESCRIPTION</th>" +
-                   "<th>PARTNER PRICE</th>" +
-                   "<th>LOYALTY PRICE</th>" +
+                   "<th>ITEM </th>" +
+                   "<th>INSTACART PRICE</th>" +
+                   "<th>" + mailModel.getBanner() +" PRICE</th>" +
                    "<th>SAVINGS</th>" +
                    "</tr>");
         for (int i = 0; i < mailModel.getUpcs().size(); i++) {

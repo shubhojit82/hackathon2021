@@ -42,6 +42,8 @@ public class MailModel {
     
     private Double total_savings;
     
+    private Double  total_partner_price;
+    
     private  List<UPC>  upcs;
     
     private Map<String, Object> model;

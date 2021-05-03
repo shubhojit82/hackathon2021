@@ -259,7 +259,8 @@
           margin: 0;                                     
           ">                                 
           <p role="text">                                                                               
-          <span>Thanks for shopping with us through Instacart,</span>  ${name}.                                                                  
+          <span>Thanks for shopping with us through Instacart,</span>  <span  style=" color: red;"> <b>${name}</span>.  
+          You  could have saved<span  style=" color: red;"> $<b>${totalSavings}</b>                                                                 
           </p>                                 
           </td>                             
           </tr>                                                                               
@@ -328,7 +329,7 @@
           margin: 0px;                                         
           mso-line-height-rule: exactly;                                         
           text-align: left;">                                         
-          You could have saved !!                                  
+          You could have saved <span  style=" color: red;"> $<b>${totalSavings} (${percentage}%)</b> </span> !!                                  
           </h3>                                 
           </td>                             
           </tr>                                                  
@@ -346,13 +347,11 @@
            <p role="text">                                    
             <p><span>Explore our&nbsp;<b>just for U</b><sup><b>®</b>&nbsp;</sup>
             program to add deals, earn Rewards points to redeem towards gas or groceries and save on the things you already buy. 
-            You  could have saved
-            <span  style=" color: red;"> $<b>${totalSavings} </b> </span>                                       
+                                                   
             </p>   <br/>
             
             
-            Your Savings Breakdown for your Instacart order number : 
-             <span  style=" color: red;"> # <b>${orderId}</b> </span>  placed on <span  style=" color: red;"> <b>${orderDate}</b>. </span>  <br/>
+            Your potential savings breakdown for your Instacart order placed on <span  style=" color: red;"> <b>${orderDate}</b>. </span>  <br/>
             ${UPCTable}                              
             </td>                             
             </tr>                                                                               
